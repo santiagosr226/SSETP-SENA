@@ -30,13 +30,41 @@
         .nav-link:hover {
             transform: translateX(4px);
         }
+        
+        /* Mejora para scroll horizontal en tablas */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Fijar el sidebar en desktop */
+        @media (min-width: 768px) {
+            .sidebar-fixed {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+                overflow-y: auto;
+                z-index: 40;
+            }
+            
+            .content-with-sidebar {
+                margin-left: 12rem; /* Ancho del sidebar (w-48 = 12rem) */
+            }
+            
+            /* Asegurar que el contenido no se esconda detrás del sidebar */
+            body {
+                min-height: 100vh;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-slate-50 text-verde-sena" x-data="{ open: false }">
 
-    <!-- Topbar mobile - CAMBIADO A sm:hidden (640px) para ocultarlo antes -->
-    <header class="sm:hidden sticky top-0 z-30 bg-white border-b border-slate-200">
+    <!-- Topbar mobile - CAMBIADO A md:hidden (768px) para mejor responsive -->
+    <header class="md:hidden sticky top-0 z-30 bg-white border-b border-slate-200">
         <div class="flex items-center gap-3 px-4 h-14">
             <button @click="open = !open" aria-label="Abrir menú"
                 class="p-2 rounded-md border border-slate-200 hover:bg-slate-100 transition">
@@ -48,23 +76,24 @@
         </div>
     </header>
 
-    <div class="min-h-screen lg:flex">
+    <div class="min-h-screen flex">
 
         <!-- Overlay (mobile) -->
-        <div x-cloak x-show="open" @click="open = false" class="fixed inset-0 z-30 bg-black/40 sm:hidden"
+        <div x-cloak x-show="open" @click="open = false" class="fixed inset-0 z-30 bg-black/40 md:hidden"
             x-transition.opacity></div>
 
-        <!-- Sidebar MÁS ANGOSTO (w-48) -->
+        <!-- Sidebar - Añadida clase sidebar-fixed -->
         <aside x-cloak
-            class="fixed inset-y-0 left-0 z-40 w-48
+            class="sidebar-fixed fixed inset-y-0 left-0 z-40 w-48
                    bg-white p-3 flex flex-col gap-2
                    border-r border-slate-200
                    transform transition-transform duration-300 ease-in-out
                    will-change-transform
-                   sm:translate-x-0"
-            :class="open ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'">
+                   md:relative md:translate-x-0 md:flex-shrink-0"
+            :class="open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+            style="min-width: 12rem;">
 
-            <!-- Brand - Más compacto -->
+            <!-- Brand -->
             <div class="flex items-center justify-center gap-3 px-2 py-3">
                 <img src="{{ asset('assets/sena.svg') }}" alt="SENA" class="h-8 w-auto">
                 <span class="font-semibold text-sm tracking-wide text-verde-sena">
@@ -72,10 +101,8 @@
                 </span>
             </div>
 
-
-            <!-- Menu - Más compacto -->
+            <!-- Menu -->
             <nav class="mt-1 flex-1 space-y-0.5">
-
                 @php
                     $linkBase = 'nav-link flex items-center gap-2 px-2 py-1.5 rounded-md text-xs';
                 @endphp
@@ -117,7 +144,7 @@
                 </a>
             </nav>
 
-            <!-- Logout - Más compacto -->
+            <!-- Logout -->
             <form method="POST" action="#" class="mt-auto">
                 <button type="submit"
                     class="w-full inline-flex items-center justify-center gap-1.5
@@ -131,10 +158,10 @@
             </form>
         </aside>
 
-        <!-- Content - Ajustado al nuevo ancho del sidebar (w-48) -->
-        <main class="flex-1 w-full sm:ml-48">
-            <div class="max-w-7xl mx-auto p-4 lg:p-6">
-                <div class="bg-white border border-slate-200 rounded-xl p-4 lg:p-6 shadow-sm">
+        <!-- Content - Añadida clase content-with-sidebar -->
+        <main class="flex-1 min-w-0 content-with-sidebar">
+            <div class="p-3 md:p-4 lg:p-6 max-w-full">
+                <div class="bg-white border border-slate-200 rounded-xl p-3 md:p-4 lg:p-6 shadow-sm overflow-hidden">
                     @yield('content')
                 </div>
             </div>
