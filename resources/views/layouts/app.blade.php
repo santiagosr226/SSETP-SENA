@@ -128,7 +128,7 @@
                     <span>Etapa productiva</span>
                 </a>
 
-                <a href="#"
+                <a href="/funcionarios"
                     class="{{ $linkBase }} {{ request()->is('funcionarios*') ? 'bg-verde-sena text-white' : 'text-verde-sena hover:bg-slate-100' }}">
                     <i data-lucide="id-card" class="w-3.5 h-3.5"></i>
                     <span>Funcionarios</span>
