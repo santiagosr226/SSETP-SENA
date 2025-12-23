@@ -110,7 +110,7 @@
                     <span>Inicio</span>
                 </a>
 
-                <a href="#"
+                <a href="/fichas"
                     class="{{ $linkBase }} {{ request()->is('fichas*') ? 'bg-verde-sena text-white' : 'text-verde-sena hover:bg-slate-100' }}">
                     <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                     <span>Fichas</span>

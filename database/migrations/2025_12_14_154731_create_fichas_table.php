@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('fichas', function (Blueprint $table) {
             $table->id();
-            $table->string('numero');
+            $table->string('numero')->unique();
             $table->string('estado');
             $table->string('modalidad');
             $table->string('jornada');

@@ -23,8 +23,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Seed funcionarios
-        $this->call([
+       /**  $this->call([
             FuncionarioSeeder::class,
         ]);
+        */
     }
 }

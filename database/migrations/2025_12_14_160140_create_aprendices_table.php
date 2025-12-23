@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('apellido');
             $table->string('tipo_documento');
-            $table->string('documento');
-            $table->string('correo');
-            $table->string('telefono');
+            $table->string('documento')->unique();
+            $table->string('correo')->nullable();
+            $table->string('telefono')->nullable();
             $table->string('estado');
             $table->string('alternativa')->nullable();
             $table->string('resultados_aprendizaje');
