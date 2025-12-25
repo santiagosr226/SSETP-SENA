@@ -13,49 +13,7 @@
     <!-- Lucide -->
     <script defer src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Evita salto inicial -->
-    <style>
-        [x-cloak] {
-            display: none !important;
-        }
-
-        /* Animación suave para hover */
-        .nav-link {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .nav-link:hover {
-            transform: translateX(4px);
-        }
-        
-        /* Mejora para scroll horizontal en tablas */
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        /* Fijar el sidebar en desktop */
-        @media (min-width: 768px) {
-            .sidebar-fixed {
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                height: 100vh;
-                overflow-y: auto;
-                z-index: 40;
-            }
-            
-            .content-with-sidebar {
-                margin-left: 12rem; /* Ancho del sidebar (w-48 = 12rem) */
-            }
-            
-            /* Asegurar que el contenido no se esconda detrás del sidebar */
-            body {
-                min-height: 100vh;
-            }
-        }
-    </style>
+    
 </head>
 
 <body class="bg-slate-50 text-verde-sena" x-data="{ open: false }">

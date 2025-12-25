@@ -1,198 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Prevenir el salto del scrollbar */
-body.modal-open {
-    overflow: hidden !important;
-}
+ 
 
-/* Estilos para badges de estados */
-.badge-estado {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.625rem;
-    font-weight: 500;
-    text-transform: capitalize;
-}
-
-.badge-activo {
-    background-color: #10b981;
-    color: white;
-}
-
-.badge-inactivo {
-    background-color: #ef4444;
-    color: white;
-}
-
-.badge-finalizado {
-    background-color: #6b7280;
-    color: white;
-}
-
-.badge-en-curso {
-    background-color: #3b82f6;
-    color: white;
-}
-
-/* Badge para nivel de programa */
-.badge-nivel {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.625rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.badge-aux {
-    background-color: #dbeafe;
-    color: #1e40af;
-}
-
-.badge-oper {
-    background-color: #fef3c7;
-    color: #92400e;
-}
-
-.badge-tco {
-    background-color: #d1fae5;
-    color: #065f46;
-}
-
-.badge-tgo {
-    background-color: #e9d5ff;
-    color: #6b21a8;
-}
-
-/* Estilos para paginación */
-.pagination {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    justify-content: center;
-    align-items: center;
-    padding: 0.75rem;
-    background-color: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-}
-
-.pagination-info {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-right: 1rem;
-}
-
-.page-item {
-    display: inline-block;
-}
-
-.page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    height: 1.75rem;
-    padding: 0 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #475569;
-    background-color: white;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
-    text-decoration: none;
-}
-
-.page-link:hover {
-    background-color: #f1f5f9;
-    border-color: #94a3b8;
-}
-
-.page-item.active .page-link {
-    background-color: #39A900;
-    color: white;
-    border-color: #39A900;
-}
-
-.page-item.disabled .page-link {
-    color: #94a3b8;
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    cursor: not-allowed;
-}
-
-/* Estilos para el modal de detalles */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    padding: 1rem;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 0.5rem;
-    max-width: 700px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-    padding: 1.25rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-body {
-    padding: 1.25rem;
-}
-
-.detail-row {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 0.75rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.detail-row:last-child {
-    border-bottom: none;
-}
-
-.detail-label {
-    font-weight: 600;
-    color: #475569;
-    font-size: 0.75rem;
-}
-
-.detail-value {
-    color: #1e293b;
-    font-size: 0.75rem;
-}
-</style>
-
-<div>
+<div x-data="fichasManager()">
     <!-- Header -->
     <div class="mb-3 md:mb-4">
         <h1 class="text-2xs md:text-xs font-semibold text-verde-sena mb-2 md:mb-3 tracking-wide">Gestionar Fichas</h1>
@@ -341,7 +152,7 @@ body.modal-open {
                         <td class="px-2 py-1.5 whitespace-nowrap align-middle">
                             <div class="flex justify-center items-center flex-wrap gap-1">
                                 <button 
-                                    onclick="showDetails({{ $ficha->id }})"
+                                    @click="showDetails({{ $ficha->id }})"
                                     class="bg-green-500 cursor-pointer hover:bg-green-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs"
                                     title="Ver detalles"
                                 >
@@ -359,7 +170,7 @@ body.modal-open {
                                 </a>
 
                                 <button 
-                                    onclick="confirmDelete({{ $ficha->id }}, '{{ $ficha->numero }}')"
+                                    @click="confirmDelete({{ $ficha->id }}, '{{ $ficha->numero }}')"
                                     class="bg-red-500 cursor-pointer hover:bg-red-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs"
                                     title="Eliminar"
                                 >
@@ -371,7 +182,7 @@ body.modal-open {
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-2 py-4 text-center text-slate-500 text-2xs md:text-xs">
+                        <td colspan="8" class="px-2 py-4 text-center text-slate-500 text-2xs md:text-xs">
                             <div class="flex flex-col items-center gap-1">
                                 <i data-lucide="file-text" class="w-6 h-6 text-slate-300"></i>
                                 @if($search ?? false)
@@ -480,19 +291,47 @@ body.modal-open {
     @endif
 
     <!-- Modal de Detalles -->
-    <div id="detailsModal" class="modal-overlay" onclick="closeDetails(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 class="text-sm font-semibold text-verde-sena">Detalles de la Ficha</h3>
-                <button onclick="closeDetails()" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="detailsContent">
-                <!-- El contenido se cargará dinámicamente -->
+    <template x-if="detailsModalOpen">
+        <div
+            x-show="detailsModalOpen"
+            @click.self="closeDetails()"
+            @keydown.escape.window="closeDetails()"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 modal-overlay"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        >
+            <div
+                @click.stop
+                class="w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-slate-200 modal-content"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+            >
+                <!-- Header -->
+                <div class="flex items-center justify-between px-4 py-3 rounded-t-xl bg-verde-sena text-white">
+                    <h2 x-text="detailsModalTitle" class="text-xs font-semibold tracking-wide"></h2>
+                    <button
+                        @click="closeDetails()"
+                        class="p-1 rounded-full cursor-pointer hover:bg-white/20 transition"
+                    >
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Contenido -->
+                <div class="px-4 py-3 max-h-[70vh] overflow-y-auto" id="detailsContent">
+                    <div x-html="detailsContent"></div>
+                </div>
             </div>
         </div>
-    </div>
+    </template>
 
     <!-- Datos de fichas para JavaScript -->
     <script>
@@ -511,192 +350,203 @@ body.modal-open {
                 fecha_final_formacion: "{{ $ficha->fecha_final_formacion ? \Carbon\Carbon::parse($ficha->fecha_final_formacion)->format('d/m/Y') : 'N/A' }}",
                 fecha_limite_productiva: "{{ $ficha->fecha_limite_productiva ? \Carbon\Carbon::parse($ficha->fecha_limite_productiva)->format('d/m/Y') : 'N/A' }}",
                 fecha_actualizacion: "{{ $ficha->fecha_actualizacion ? \Carbon\Carbon::parse($ficha->fecha_actualizacion)->format('d/m/Y') : 'N/A' }}",
-                resultados_aprendizaje: "{{ $ficha->resultados_aprendizaje_totales }}"
+                resultados_aprendizaje: "{{ $ficha->resultados_aprendizaje_totales }}",
+                created_at: "{{ $ficha->created_at ? \Carbon\Carbon::parse($ficha->created_at)->format('d/m/Y H:i') : 'N/A' }}",
+                updated_at: "{{ $ficha->updated_at ? \Carbon\Carbon::parse($ficha->updated_at)->format('d/m/Y H:i') : 'N/A' }}"
             },
             @endforeach
         };
     </script>
-
-    <!-- Formulario oculto para eliminar -->
-    <form id="deleteForm" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
 </div>
 
 <script>
-// Función para mostrar detalles de la ficha
-function showDetails(fichaId) {
-    const ficha = fichasData[fichaId];
-    if (!ficha) return;
+function fichasManager() {
+    return {
+        detailsModalOpen: false,
+        detailsModalTitle: 'Detalles de la Ficha',
+        detailsContent: '',
+        
+        showDetails(fichaId) {
+            const ficha = fichasData[fichaId];
+            if (!ficha) return;
 
-    // Determinar el color del badge de estado
-    let estadoBadgeClass = 'badge-activo';
-    let estadoIcon = 'check-circle';
-    
-    switch(ficha.estado.toLowerCase()) {
-        case 'activo':
-            estadoBadgeClass = 'badge-activo';
-            estadoIcon = 'check-circle';
-            break;
-        case 'inactivo':
-            estadoBadgeClass = 'badge-inactivo';
-            estadoIcon = 'x-circle';
-            break;
-        case 'finalizado':
-            estadoBadgeClass = 'badge-finalizado';
-            estadoIcon = 'flag';
-            break;
-        case 'en curso':
-            estadoBadgeClass = 'badge-en-curso';
-            estadoIcon = 'play-circle';
-            break;
-    }
-
-    const content = `
-        <div class="detail-row">
-            <div class="detail-label">Número de Ficha:</div>
-            <div class="detail-value font-semibold">${ficha.numero}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Programa:</div>
-            <div class="detail-value">${ficha.programa}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Nivel:</div>
-            <div class="detail-value">${ficha.nivel}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Estado:</div>
-            <div class="detail-value">
-                <span class="badge-estado ${estadoBadgeClass}">
-                    <i data-lucide="${estadoIcon}" class="w-2.5 h-2.5"></i>
-                    ${ficha.estado}
-                </span>
-            </div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Modalidad:</div>
-            <div class="detail-value">${ficha.modalidad}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Jornada:</div>
-            <div class="detail-value">${ficha.jornada}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Instructor Líder:</div>
-            <div class="detail-value capitalize">${ficha.instructor}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Fecha Inicial:</div>
-            <div class="detail-value">${ficha.fecha_inicial}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Fecha Final Lectiva:</div>
-            <div class="detail-value">${ficha.fecha_final_lectiva}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Fecha Final Formación:</div>
-            <div class="detail-value">${ficha.fecha_final_formacion}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Fecha Límite Productiva:</div>
-            <div class="detail-value">${ficha.fecha_limite_productiva}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Fecha Actualización:</div>
-            <div class="detail-value">${ficha.fecha_actualizacion}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label">Resultados de Aprendizaje:</div>
-            <div class="detail-value">${ficha.resultados_aprendizaje}</div>
-        </div>
-    `;
-
-    document.getElementById('detailsContent').innerHTML = content;
-    document.getElementById('detailsModal').classList.add('show');
-    document.body.style.overflow = 'hidden';
-    
-    // Re-inicializar iconos de Lucide en el modal
-    if (window.lucide?.createIcons) {
-        lucide.createIcons();
-    }
-}
-
-// Función para cerrar el modal
-function closeDetails(event) {
-    if (!event || event.target.id === 'detailsModal') {
-        document.getElementById('detailsModal').classList.remove('show');
-        document.body.style.overflow = '';
-    }
-}
-
-// Cerrar modal con tecla ESC
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeDetails();
-    }
-});
-
-// Función para confirmar eliminación
-async function confirmDelete(id, numero) {
-    const result = await Swal.fire({
-        icon: 'warning',
-        title: '¿Eliminar ficha?',
-        html: `¿Estás seguro de eliminar la ficha <strong>"${numero}"</strong>?<br><br>Esta acción no se puede deshacer.`,
-        showCancelButton: true,
-        confirmButtonColor: '#df0026',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        focusCancel: true
-    });
-
-    if (result.isConfirmed) {
-        Swal.fire({
-            title: 'Eliminando ficha...',
-            html: 'Por favor espera',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-                Swal.showLoading();
+            // Determinar el color del badge de estado
+            let estadoBadgeClass = 'badge-activo';
+            let estadoIcon = 'check-circle';
+            
+            switch(ficha.estado.toLowerCase()) {
+                case 'activo':
+                    estadoBadgeClass = 'badge-activo';
+                    estadoIcon = 'check-circle';
+                    break;
+                case 'inactivo':
+                    estadoBadgeClass = 'badge-inactivo';
+                    estadoIcon = 'x-circle';
+                    break;
+                case 'finalizado':
+                    estadoBadgeClass = 'badge-finalizado';
+                    estadoIcon = 'flag';
+                    break;
+                case 'en curso':
+                    estadoBadgeClass = 'badge-en-curso';
+                    estadoIcon = 'play-circle';
+                    break;
             }
-        });
 
-        try {
-            const formData = new FormData();
-            formData.append('_token', '{{ csrf_token() }}');
-            formData.append('_method', 'DELETE');
+            this.detailsModalTitle = `Detalles de la Ficha ${ficha.numero}`;
+            
+            this.detailsContent = `
+                <div class="space-y-3">
+                    <div class="detail-row">
+                        <div class="detail-label">Número de Ficha:</div>
+                        <div class="detail-value font-semibold text-verde-sena">${ficha.numero}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Programa:</div>
+                        <div class="detail-value">${ficha.programa}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Nivel:</div>
+                        <div class="detail-value">${ficha.nivel}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Estado:</div>
+                        <div class="detail-value">
+                            <span class="badge-estado ${estadoBadgeClass}">
+                                <i data-lucide="${estadoIcon}" class="w-2.5 h-2.5"></i>
+                                ${ficha.estado}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Modalidad:</div>
+                        <div class="detail-value capitalize">${ficha.modalidad}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Jornada:</div>
+                        <div class="detail-value capitalize">${ficha.jornada}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Instructor Líder:</div>
+                        <div class="detail-value capitalize">${ficha.instructor}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Inicial:</div>
+                        <div class="detail-value">${ficha.fecha_inicial}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Final Lectiva:</div>
+                        <div class="detail-value">${ficha.fecha_final_lectiva}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Final Formación:</div>
+                        <div class="detail-value">${ficha.fecha_final_formacion}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Límite Productiva:</div>
+                        <div class="detail-value">${ficha.fecha_limite_productiva}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Actualización:</div>
+                        <div class="detail-value">${ficha.fecha_actualizacion}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Resultados de Aprendizaje:</div>
+                        <div class="detail-value">${ficha.resultados_aprendizaje}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Fecha Creación:</div>
+                        <div class="detail-value">${ficha.created_at}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Última Actualización:</div>
+                        <div class="detail-value">${ficha.updated_at}</div>
+                    </div>
+                </div>
+            `;
 
-            const response = await fetch(`/fichas/${id}`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            // Bloquear scroll
+            document.body.classList.add('modal-open');
+            
+            // Abrir modal
+            this.detailsModalOpen = true;
+            
+            // Inicializar iconos
+            this.$nextTick(() => {
+                if (window.lucide?.createIcons) {
+                    lucide.createIcons();
                 }
             });
+        },
 
-            if (response.ok) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Eliminado!',
-                    text: 'La ficha ha sido eliminada correctamente',
-                    timer: 2000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                throw new Error('Error al eliminar la ficha');
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se pudo eliminar la ficha',
-                confirmButtonColor: '#39A900'
+        closeDetails() {
+            this.detailsModalOpen = false;
+            
+            setTimeout(() => {
+                document.body.classList.remove('modal-open');
+            }, 250);
+        },
+
+        async confirmDelete(id, numero) {
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: '¿Eliminar ficha?',
+                html: `¿Estás seguro de eliminar la ficha <strong>"${numero}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+                showCancelButton: true,
+                confirmButtonColor: '#df0026',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                focusCancel: true
             });
+
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Eliminando ficha...',
+                    html: 'Por favor espera',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                try {
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('_method', 'DELETE');
+
+                    const response = await fetch(`/fichas/${id}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Eliminado!',
+                            text: 'La ficha ha sido eliminada correctamente',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error('Error al eliminar la ficha');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo eliminar la ficha',
+                        confirmButtonColor: '#39A900'
+                    });
+                }
+            }
         }
     }
 }

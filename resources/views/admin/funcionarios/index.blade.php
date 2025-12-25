@@ -1,109 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Prevenir el salto del scrollbar */
-body.modal-open {
-    overflow: hidden !important;
-}
-
-/* Asegurar que el fondo del modal no cause saltos */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 50;
-}
-
-.modal-content {
-    position: relative;
-    z-index: 51;
-}
-
-/* Estilos para badges de roles */
-.badge-rol {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.625rem;
-    font-weight: 500;
-    text-transform: capitalize;
-}
-
-.badge-administrador {
-    background-color: #ef4444;
-    color: white;
-}
-
-.badge-coordinador {
-    background-color: #f59e0b;
-    color: white;
-}
-
-.badge-instructor {
-    background-color: #3b82f6;
-    color: white;
-}
-
-/* Estilos para paginación */
-.pagination {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    justify-content: center;
-    align-items: center;
-    padding: 0.75rem;
-    background-color: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-}
-
-.pagination-info {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-right: 1rem;
-}
-
-.page-item {
-    display: inline-block;
-}
-
-.page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    height: 1.75rem;
-    padding: 0 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #475569;
-    background-color: white;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
-    text-decoration: none;
-}
-
-.page-link:hover {
-    background-color: #f1f5f9;
-    border-color: #94a3b8;
-}
-
-.page-item.active .page-link {
-    background-color: #39A900;
-    color: white;
-    border-color: #39A900;
-}
-
-.page-item.disabled .page-link {
-    color: #94a3b8;
-    background-color: #f8fafc;
-    border-color: #e2e8f0;
-    cursor: not-allowed;
-}
-</style>
+ 
 
 <div x-data="funcionariosManager()">
     <!-- Header -->
@@ -455,7 +353,7 @@ body.modal-open {
                                 x-model="formData.telefono"
                                 required
                                 :disabled="isSubmitting"
-                                placeholder="+57 300 123 4567"
+                                placeholder="300 123 4567"
                                 class="w-full rounded-lg px-3 py-2 text-2xs border border-verde-sena focus:border-verde-sena focus:ring-2 focus:ring-verde-sena/40 focus:outline-none focus:ring-offset-0 appearance-none transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                         </div>

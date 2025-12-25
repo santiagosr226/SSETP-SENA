@@ -1,25 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Prevenir el salto del scrollbar */
-body.modal-open {
-    overflow: hidden !important;
-}
-
-/* Asegurar que el fondo del modal no cause saltos */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 50;
-}
-
-.modal-content {
-    position: relative;
-    z-index: 51;
-}
-</style>
+ 
 
 <div x-data="programasManager()">
     <!-- Header -->
