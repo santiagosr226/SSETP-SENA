@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FuncionarioSeeder::class,
             ProgramasSeeder::class,
-            FichasSeeder::class,
         ]);
     }
 }

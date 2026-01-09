@@ -4,6 +4,29 @@
  
 
 <div x-data="fichaManager()">
+    <!-- Spinner de carga fullscreen -->
+    <div 
+        x-show="isSubmitting"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm"
+    >
+        <div class="bg-white rounded-lg shadow-2xl p-8 flex flex-col items-center gap-4 min-w-[300px]">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-verde-sena border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <div class="text-center">
+                <h3 class="text-lg font-semibold text-slate-800 mb-2">Creando ficha...</h3>
+                <p class="text-sm text-slate-600">Por favor espera, esto puede tomar unos momentos</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="mb-6">
         <h1 class="text-xs font-semibold text-verde-sena mb-2 tracking-wide">Crear Ficha</h1>
@@ -150,9 +173,9 @@
                         required
                     >
                         <option value="">Seleccionar estado</option>
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
-                        <option value="finalizado">Finalizado</option>
+                        <option value="en ejecución">En Ejecución</option>
+                        <option value="terminada por fecha">Terminada por Fecha</option>
+                        <option value="cancelada">Cancelada</option>
                         <option value="en curso">En Curso</option>
                     </select>
                     @error('estado')
@@ -168,28 +191,38 @@
             
             <div class="form-grid">
                 <!-- Fecha Inicial -->
-                <div>
-                    <label for="fecha_inicial" class="form-label">Fecha Inicial *</label>
-                    <input 
-                        type="date" 
-                        id="fecha_inicial" 
-                        name="fecha_inicial" 
-                        x-model="formData.fecha_inicial"
-                        class="input-field"
-                        required
-                    >
-                    @error('fecha_inicial')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+                <div 
+    @click="$refs.fechaInicial.showPicker()" 
+    class="cursor-pointer"
+>
+    <label for="fecha_inicial" class="form-label">
+        Fecha Inicial Formación
+    </label>
+
+    <input 
+        type="date" 
+        id="fecha_inicial" 
+        name="fecha_inicial" 
+        x-ref="fechaInicial"
+        x-model="formData.fecha_inicial"
+        class="input-field"
+        required
+    >
+
+    @error('fecha_inicial')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+</div>
+
 
                 <!-- Fecha Final Lectiva -->
-                <div>
+                <div @click="$refs.fechaFinalLectiva.showPicker()" class="cursor-pointer">
                     <label for="fecha_final_lectiva" class="form-label">Fecha Final Lectiva</label>
                     <input 
                         type="date" 
                         id="fecha_final_lectiva" 
                         name="fecha_final_lectiva" 
+                        x-ref="fechaFinalLectiva"
                         x-model="formData.fecha_final_lectiva"
                         class="input-field"
                     >
@@ -199,12 +232,13 @@
                 </div>
 
                 <!-- Fecha Final Formación -->
-                <div>
+                <div @click="$refs.fechaFinalFormacion.showPicker()" class="cursor-pointer">
                     <label for="fecha_final_formacion" class="form-label">Fecha Final Formación</label>
                     <input 
                         type="date" 
                         id="fecha_final_formacion" 
                         name="fecha_final_formacion" 
+                        x-ref="fechaFinalFormacion"
                         x-model="formData.fecha_final_formacion"
                         class="input-field"
                     >
@@ -214,12 +248,13 @@
                 </div>
 
                 <!-- Fecha Límite Productiva -->
-                <div>
+                <div @click="$refs.fechaLimiteProductiva.showPicker()" class="cursor-pointer">
                     <label for="fecha_limite_productiva" class="form-label">Fecha Límite Productiva</label>
                     <input 
                         type="date" 
                         id="fecha_limite_productiva" 
                         name="fecha_limite_productiva" 
+                        x-ref="fechaLimiteProductiva"
                         x-model="formData.fecha_limite_productiva"
                         class="input-field"
                     >
@@ -266,9 +301,11 @@
                         required
                     >
                         <option value="">Seleccionar jornada</option>
-                        <option value="diurna">Diurna</option>
-                        <option value="nocturna">Nocturna</option>
-                        <option value="mixta">Mixta</option>
+                        <option value="mañana">Mañana</option>
+                        <option value="tarde">Tarde</option>
+                        <option value="noche">Noche</option>
+                        <option value="virtual">Virtual</option>
+                        <option value="otra">Otra...</option>
                     </select>
                     @error('jornada')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -276,12 +313,13 @@
                 </div>
 
                 <!-- Fecha Actualización -->
-                <div>
+                <div @click="$refs.fechaActualizacion.showPicker()" class="cursor-pointer">
                     <label for="fecha_actualizacion" class="form-label">Fecha Actualización</label>
                     <input 
                         type="date" 
                         id="fecha_actualizacion" 
                         name="fecha_actualizacion" 
+                        x-ref="fechaActualizacion"
                         x-model="formData.fecha_actualizacion"
                         class="input-field"
                     >
@@ -312,32 +350,70 @@
         <div class="form-card">
             <h2 class="text-sm font-semibold text-verde-sena mb-4">Importar Datos</h2>
             
-            <div class="flex flex-wrap gap-3">
-                <button 
-                    type="button" 
-                    @click="openImportModal('aprendices')"
-                    class="btn-import btn-import-aprendices"
-                >
-                    <i data-lucide="users" class="w-3 h-3"></i>
-                    Importar Aprendices
-                </button>
-                
-                <button 
-                    type="button" 
-                    @click="openImportModal('juicios')"
-                    class="btn-import btn-import-juicios"
-                >
-                    <i data-lucide="clipboard-check" class="w-3 h-3"></i>
-                    Importar Juicios Evaluativos
-                </button>
-            </div>
+           <div class="flex flex-wrap gap-3">
+    <button 
+        type="button"
+        @click="openImportModal('aprendices')"
+        class="inline-flex items-center gap-2 rounded-lg 
+               bg-blue-600 px-4 py-2 text-sm font-semibold text-white
+               shadow-sm transition
+               hover:bg-blue-700
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+               active:scale-95 cursor-pointer"
+    >
+        <i data-lucide="users" class="w-4 h-4"></i>
+        Importar Aprendices
+    </button>
+
+    <button 
+        type="button"
+        @click="openImportModal('juicios')"
+        class="inline-flex items-center gap-2 rounded-lg
+               bg-purple-600 px-4 py-2 text-sm font-semibold text-white
+               shadow-sm transition
+               hover:bg-purple-700
+               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+               active:scale-95 cursor-pointer"
+    >
+        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+        Importar Juicios Evaluativos
+    </button>
+    
+    <button 
+        type="button"
+        @click="clearJuicios()"
+        x-show="importedData.juicios.length > 0"
+        class="inline-flex items-center gap-2 rounded-lg
+               bg-red-50 px-4 py-2 text-sm font-semibold text-red-600
+               border border-red-200 shadow-sm transition
+               hover:bg-red-100
+               focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+               active:scale-95 cursor-pointer"
+    >
+        <i data-lucide="x-circle" class="w-4 h-4"></i>
+        Limpiar Juicios
+    </button>
+</div>
+
         </div>
 
         <!-- Listado de aprendices -->
         <div class="form-card">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-sm font-semibold text-verde-sena">Aprendices Asociados</h2>
-                <span x-text="`${importedData.aprendices.length} aprendices`" class="text-xs text-slate-500"></span>
+                <div class="flex items-center gap-3">
+                    <span x-text="`${importedData.aprendices.length} aprendices`" class="text-xs text-slate-500"></span>
+                    <button 
+                        type="button"
+                        @click="clearAprendices()"
+                        x-show="importedData.aprendices.length > 0"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition duration-200"
+                        title="Eliminar todos los aprendices importados"
+                    >
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        Limpiar aprendices
+                    </button>
+                </div>
             </div>
             
             <div x-show="importedData.aprendices.length === 0">
@@ -360,12 +436,13 @@
                                 <th class="px-3 py-2 text-center font-medium">Celular</th>
                                 <th class="px-3 py-2 text-center font-medium">Email</th>
                                 <th class="px-3 py-2 text-center font-medium">Estado</th>
+                                <th class="px-3 py-2 text-center font-medium">Resultado Aprendizaje</th>
                                 <th class="px-3 py-2 text-center font-medium">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white">
                             <template x-for="(aprendiz, index) in importedData.aprendices" :key="index">
-                                <tr class="table-row text-center hover:bg-slate-50">
+                                <tr class="table-row text-center" :class="isEstadoExcluido(aprendiz.estado) ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-slate-50'">
                                     <td class="px-3 py-2 text-slate-700" x-text="aprendiz.tipo_documento || 'CC'"></td>
                                     <td class="px-3 py-2 text-slate-700 font-medium" x-text="aprendiz.numero_documento"></td>
                                     <td class="px-3 py-2 text-slate-700" x-text="aprendiz.nombre"></td>
@@ -378,6 +455,18 @@
                                             'badge-estado badge-inactivo': (aprendiz.estado || '').toLowerCase() === 'inactivo',
                                             'badge-estado badge-pendiente': !aprendiz.estado || (aprendiz.estado || '').toLowerCase() === 'pendiente'
                                         }" x-text="aprendiz.estado || 'Pendiente'"></span>
+                                    </td>
+                                    <td class="px-3 py-2 text-slate-700">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
+                                              :class="{
+                                                  'bg-yellow-100 text-yellow-800': (aprendiz.por_evaluar || 0) > 0,
+                                                  'bg-green-100 text-green-800': (aprendiz.por_evaluar || 0) === 0 && (aprendiz.total_resultados || 0) > 0,
+                                                  'bg-slate-100 text-slate-600': !aprendiz.total_resultados || aprendiz.total_resultados === 0
+                                              }">
+                                            <span x-text="(aprendiz.por_evaluar || 0) + ' por evaluar'"></span>
+                                            <span x-show="aprendiz.total_resultados" class="text-2xs opacity-75" 
+                                                  x-text="'/' + (aprendiz.total_resultados || 0)"></span>
+                                        </span>
                                     </td>
                                     <td class="px-3 py-2">
                                         <button 
@@ -471,13 +560,11 @@
                         'Sube un archivo Excel o CSV con los juicios evaluativos de los aprendices.'"></p>
                     
                     <div class="bg-slate-50 p-3 rounded-md">
-                        <code class="text-2xs text-slate-700 block font-mono">
-                            <template x-if="currentImportType === 'aprendices'">
-                                tipo_documento, numero_documento, nombre, apellido, celular, email, estado
-                            </template>
-                            <template x-if="currentImportType === 'juicios'">
-                                numero_documento, resultado_aprendizaje, juicio_evaluativo, fecha_evaluacion
-                            </template>
+                        <code class="text-2xs text-slate-700 block font-mono" x-show="currentImportType === 'aprendices'">
+                            Tipo de Documento, Número de Documento, Nombre, Apellidos, Celular, Correo Electrónico, Estado
+                        </code>
+                        <code class="text-2xs text-slate-700 block font-mono" x-show="currentImportType === 'juicios'">
+                            Tipo de Documento, Número de Documento, Nombre, Apellidos, Estado, Competencia, Resultado de Aprendizaje, Juicio de Evaluación
                         </code>
                     </div>
                     
@@ -510,8 +597,8 @@
                             <div class="flex items-center gap-2">
                                 <i data-lucide="file-text" class="w-4 h-4 text-slate-500"></i>
                                 <div class="flex-1">
-                                    <p class="text-xs font-medium text-slate-700 truncate" x-text="selectedFile.name"></p>
-                                    <p class="text-2xs text-slate-500" x-text="formatFileSize(selectedFile.size)"></p>
+                                    <p class="text-xs font-medium text-slate-700 truncate" x-text="selectedFile ? selectedFile.name : ''"></p>
+                                    <p class="text-2xs text-slate-500" x-text="selectedFile ? formatFileSize(selectedFile.size) : ''"></p>
                                 </div>
                                 <button 
                                     type="button" 
@@ -588,6 +675,11 @@ function fichaManager() {
         selectedFile: null,
         isImporting: false,
         isSubmitting: false,
+
+        isEstadoExcluido(estado) {
+            const v = (estado || '').toString().trim().toUpperCase();
+            return ['RETIRO VOLUNTARIO', 'CANCELADO', 'TRASLADADO', 'APLAZADO'].includes(v);
+        },
         
         openImportModal(type) {
             this.currentImportType = type;
@@ -671,71 +763,166 @@ function fichaManager() {
             
             this.isImporting = true;
             
-            // Simulación de importación - en producción aquí harías la petición real
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Datos de ejemplo para simulación
-            if (this.currentImportType === 'aprendices') {
-                // Simular importación de aprendices
-                const nuevosAprendices = [
-                    {
-                        tipo_documento: 'CC',
-                        numero_documento: '123456789',
-                        nombre: 'Juan',
-                        apellido: 'Pérez',
-                        celular: '3001234567',
-                        email: 'juan@ejemplo.com',
-                        estado: 'activo'
-                    },
-                    {
-                        tipo_documento: 'TI',
-                        numero_documento: '987654321',
-                        nombre: 'María',
-                        apellido: 'Gómez',
-                        celular: '3109876543',
-                        email: 'maria@ejemplo.com',
-                        estado: 'activo'
+            try {
+                if (this.currentImportType === 'aprendices') {
+                    // Crear FormData para enviar el archivo
+                    const formData = new FormData();
+                    formData.append('archivo', this.selectedFile);
+                    
+                    // Realizar petición al endpoint de importación
+                    const response = await fetch('{{ route("fichas.importar-aprendices") }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Agregar los aprendices importados a la lista
+                        // Inicializar campos de conteo para cada aprendiz
+                        const listaAprendices = Array.isArray(data.aprendices)
+                            ? data.aprendices
+                            : (data.aprendices && typeof data.aprendices === 'object'
+                                ? Object.values(data.aprendices)
+                                : []);
+
+                        if (!Array.isArray(listaAprendices) || listaAprendices.length === 0) {
+                            throw new Error(data.message || 'No se encontraron aprendices válidos en el archivo');
+                        }
+
+                        const aprendicesConConteo = listaAprendices.map(aprendiz => ({
+                            ...aprendiz,
+                            total_resultados: 0,
+                            por_evaluar: 0,
+                            aprobados: 0,
+                            no_aprobados: 0
+                        }));
+                        this.importedData.aprendices.push(...aprendicesConConteo);
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Importación exitosa!',
+                            text: data.message || `${data.total} aprendices importados correctamente`,
+                            confirmButtonColor: '#39A900'
+                        });
+                        
+                        // Resetear el estado antes de cerrar
+                        this.isImporting = false;
+                        this.selectedFile = null;
+                        // Limpiar el input file
+                        const fileInput = document.getElementById('importFile');
+                        if (fileInput) {
+                            fileInput.value = '';
+                        }
+                        
+                        this.closeImportModal();
+                    } else {
+                        throw new Error(data.message || 'Error al importar el archivo');
                     }
-                ];
-                
-                this.importedData.aprendices.push(...nuevosAprendices);
-                
+                } else {
+                    // Verificar que haya aprendices importados
+                    if (this.importedData.aprendices.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No hay aprendices importados',
+                            text: 'Por favor, importa primero los aprendices antes de importar los juicios evaluativos.',
+                            confirmButtonColor: '#39A900'
+                        });
+                        this.isImporting = false;
+                        return;
+                    }
+                    
+                    // Importar juicios evaluativos
+                    const formData = new FormData();
+                    formData.append('archivo', this.selectedFile);
+                    
+                    // Agregar números de documento de aprendices importados
+                    const numerosDocumento = this.importedData.aprendices.map(a => a.numero_documento);
+                    numerosDocumento.forEach(numDoc => {
+                        formData.append('numeros_documento[]', numDoc);
+                    });
+                    
+                    // Realizar petición al endpoint de importación
+                    const response = await fetch('{{ route("fichas.importar-juicios-evaluativos") }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Relacionar el conteo con los aprendices importados
+                        const conteoPorAprendiz = data.conteo_por_aprendiz || [];
+                        
+                        // Crear un mapa de conteo por número de documento
+                        const conteoMap = {};
+                        conteoPorAprendiz.forEach(item => {
+                            conteoMap[item.numero_documento] = item;
+                        });
+                        
+                        // Actualizar los aprendices con el conteo
+                        this.importedData.aprendices.forEach(aprendiz => {
+                            const conteo = conteoMap[aprendiz.numero_documento];
+                            if (conteo) {
+                                aprendiz.total_resultados = conteo.total_resultados || 0;
+                                aprendiz.por_evaluar = conteo.por_evaluar || 0;
+                                aprendiz.aprobados = conteo.aprobados || 0;
+                                aprendiz.no_aprobados = conteo.no_aprobados || 0;
+                            } else {
+                                // Si no se encuentra, inicializar en 0
+                                aprendiz.total_resultados = 0;
+                                aprendiz.por_evaluar = 0;
+                                aprendiz.aprobados = 0;
+                                aprendiz.no_aprobados = 0;
+                            }
+                        });
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Importación exitosa!',
+                            text: data.message || `Juicios evaluativos procesados para ${data.total_aprendices} aprendices`,
+                            confirmButtonColor: '#39A900'
+                        });
+                        
+                        // Resetear el estado antes de cerrar
+                        this.isImporting = false;
+                        this.selectedFile = null;
+                        // Limpiar el input file
+                        const fileInput = document.getElementById('importFile');
+                        if (fileInput) {
+                            fileInput.value = '';
+                        }
+                        
+                        this.closeImportModal();
+                    } else {
+                        throw new Error(data.message || 'Error al importar el archivo');
+                    }
+                }
+            } catch (error) {
                 Swal.fire({
-                    icon: 'success',
-                    title: '¡Importación exitosa!',
-                    text: `${nuevosAprendices.length} aprendices importados correctamente`,
+                    icon: 'error',
+                    title: 'Error en la importación',
+                    text: error.message || 'Ocurrió un error al importar el archivo. Por favor, verifica el formato del archivo.',
                     confirmButtonColor: '#39A900'
                 });
-            } else {
-                // Simular importación de juicios
-                const nuevosJuicios = [
-                    {
-                        numero_documento: '123456789',
-                        resultado_aprendizaje: 'RA001',
-                        juicio_evaluativo: 'Aprobado',
-                        fecha_evaluacion: '2024-01-15'
+            } finally {
+                this.isImporting = false;
+                
+                // Re-inicializar iconos
+                this.$nextTick(() => {
+                    if (window.lucide?.createIcons) {
+                        lucide.createIcons();
                     }
-                ];
-                
-                this.importedData.juicios.push(...nuevosJuicios);
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Importación exitosa!',
-                    text: `${nuevosJuicios.length} juicios evaluativos importados`,
-                    confirmButtonColor: '#39A900'
                 });
             }
-            
-            this.isImporting = false;
-            this.closeImportModal();
-            
-            // Re-inicializar iconos
-            this.$nextTick(() => {
-                if (window.lucide?.createIcons) {
-                    lucide.createIcons();
-                }
-            });
         },
         
         removeAprendiz(index) {
@@ -751,6 +938,84 @@ function fichaManager() {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.importedData.aprendices.splice(index, 1);
+                }
+            });
+        },
+        
+        clearAprendices() {
+            Swal.fire({
+                icon: 'question',
+                title: '¿Limpiar aprendices?',
+                text: `¿Estás seguro de eliminar todos los ${this.importedData.aprendices.length} aprendices importados? Esta acción también limpiará los juicios evaluativos asociados.`,
+                showCancelButton: true,
+                confirmButtonColor: '#df0026',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, limpiar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.importedData.aprendices = [];
+                    this.importedData.juicios = [];
+                    
+                    // Actualizar iconos después de limpiar
+                    this.$nextTick(() => {
+                        if (window.lucide?.createIcons) {
+                            lucide.createIcons();
+                        }
+                    });
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Limpiado!',
+                        text: 'Todos los aprendices y juicios han sido eliminados.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            });
+        },
+        
+        clearJuicios() {
+            Swal.fire({
+                icon: 'question',
+                title: '¿Limpiar juicios evaluativos?',
+                text: '¿Estás seguro de eliminar todos los juicios evaluativos importados? Los conteos de resultados de aprendizaje se perderán.',
+                showCancelButton: true,
+                confirmButtonColor: '#df0026',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, limpiar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.importedData.juicios = [];
+                    // También limpiar los conteos de los aprendices
+                    this.importedData.aprendices.forEach(aprendiz => {
+                        aprendiz.total_resultados = 0;
+                        aprendiz.por_evaluar = 0;
+                        aprendiz.aprobados = 0;
+                        aprendiz.no_aprobados = 0;
+                    });
+                    
+                    // Actualizar iconos después de limpiar
+                    this.$nextTick(() => {
+                        if (window.lucide?.createIcons) {
+                            lucide.createIcons();
+                        }
+                    });
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Limpiado!',
+                        text: 'Todos los juicios evaluativos han sido eliminados.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
                 }
             });
         },
@@ -794,33 +1059,124 @@ function fichaManager() {
 
             this.isSubmitting = true;
             
-            // Crear un formulario para enviar los datos
-            const form = document.querySelector('form');
-            const formData = new FormData(form);
+            console.log('Iniciando envío de formulario...');
+            console.log('Datos del formulario:', this.formData);
             
-            // Enviar datos a través de fetch
+            // Crear FormData directamente desde los datos de Alpine.js
+            const formData = new FormData();
+            
+            // Agregar token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            formData.append('_token', csrfToken);
+            
+            // Agregar todos los campos del formulario
+            formData.append('numero', this.formData.numero || '');
+            formData.append('programa_id', this.formData.programa_id || '');
+            formData.append('instructor_id', this.formData.instructor_id || '');
+            formData.append('estado', this.formData.estado || '');
+            formData.append('fecha_inicial', this.formData.fecha_inicial || '');
+            formData.append('fecha_final_lectiva', this.formData.fecha_final_lectiva || '');
+            formData.append('fecha_final_formacion', this.formData.fecha_final_formacion || '');
+            formData.append('fecha_limite_productiva', this.formData.fecha_limite_productiva || '');
+            formData.append('fecha_actualizacion', this.formData.fecha_actualizacion || '');
+            formData.append('modalidad', this.formData.modalidad || '');
+            formData.append('jornada', this.formData.jornada || '');
+            formData.append('resultados_aprendizaje_totales', this.formData.resultados_aprendizaje_totales || 0);
+            
+            // Agregar aprendices importados
+            formData.append('imported_aprendices', JSON.stringify(this.importedData.aprendices || []));
+            
+            // Debug: mostrar qué se está enviando
+            console.log('Datos a enviar:');
+            for (let [key, value] of formData.entries()) {
+                if (key === 'imported_aprendices') {
+                    console.log(`${key}: ${value.substring(0, 100)}...`);
+                } else {
+                    console.log(`${key}: ${value}`);
+                }
+            }
+            
+            // Usar la ruta correcta explícitamente
+            const url = '{{ route("fichas.store") }}';
+            console.log('URL:', url);
+            
+            // Enviar datos a través de fetch con timeout
             try {
-                const response = await fetch(form.action, {
+                console.log('Enviando request...');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    console.error('Timeout alcanzado');
+                    controller.abort();
+                }, 60000); // 60 segundos timeout
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     body: formData,
+                    signal: controller.signal,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
                     }
                 });
+                
+                clearTimeout(timeoutId);
+                
+                console.log('Response recibida:', response.status, response.statusText);
 
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: 'Ficha creada correctamente',
-                        timer: 2000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = '{{ route("fichas.index") }}';
+                const data = await response.json();
+                console.log('Datos recibidos:', data);
+                
+                if (response.ok && data.success) {
+                    this.isSubmitting = false;
+                    
+                    // Construir el HTML del mensaje
+                    let htmlContent = `<p class="text-base mb-3">${data.message || 'Ficha creada correctamente'}</p>`;
+                    
+                    // Mostrar aprendices creados exitosamente
+                    if (data.aprendices_creados > 0) {
+                        htmlContent += `<p class="text-sm text-green-700 mb-2">
+                            <i class="inline-block w-4 h-4 mr-1">✓</i>
+                            <strong>${data.aprendices_creados}</strong> aprendices creados exitosamente.
+                        </p>`;
+                    }
+                    
+                    // Mostrar aprendices con errores
+                    if (data.aprendices_error && data.aprendices_error.length > 0) {
+                        htmlContent += `<div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <p class="text-sm font-semibold text-red-800 mb-2">
+                                <i class="inline-block w-4 h-4 mr-1">⚠</i>
+                                ${data.aprendices_error.length} aprendices no pudieron ser guardados:
+                            </p>
+                            <div class="max-h-48 overflow-y-auto space-y-1">
+                                <ul class="text-xs text-red-700 space-y-1">`;
+                        
+                        data.aprendices_error.forEach(aprendiz => {
+                            htmlContent += `<li class="flex items-start gap-2">
+                                <span class="font-medium">${aprendiz.numero_documento}</span>
+                                <span class="text-slate-600">-</span>
+                                <span class="flex-1">${aprendiz.nombre || 'Sin nombre'}</span>
+                                <span class="text-red-600 font-medium">(${aprendiz.error})</span>
+                            </li>`;
+                        });
+                        
+                        htmlContent += `</ul>
+                            </div>
+                        </div>`;
+                    }
+                    
+                    await Swal.fire({
+                        icon: data.aprendices_error && data.aprendices_error.length > 0 ? 'warning' : 'success',
+                        title: data.aprendices_error && data.aprendices_error.length > 0 ? 'Ficha creada con advertencias' : '¡Éxito!',
+                        html: htmlContent,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#39A900',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        width: '600px'
                     });
+                    
+                    window.location.href = '{{ route("fichas.index") }}';
                 } else {
-                    const data = await response.json();
                     let errorMessage = 'Error al crear la ficha';
                     
                     if (data.errors) {
@@ -832,12 +1188,21 @@ function fichaManager() {
                     throw new Error(errorMessage);
                 }
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message,
-                    confirmButtonColor: '#39A900'
-                });
+                if (error.name === 'AbortError') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Timeout',
+                        text: 'La operación está tomando demasiado tiempo. Por favor, verifica los logs del servidor.',
+                        confirmButtonColor: '#39A900'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'Ocurrió un error al crear la ficha',
+                        confirmButtonColor: '#39A900'
+                    });
+                }
                 this.isSubmitting = false;
             }
         }

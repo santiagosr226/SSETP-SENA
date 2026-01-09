@@ -15,4 +15,6 @@ Route::resource('programas', ProgramaController::class);
 Route::resource('funcionarios', FuncionarioController::class);
 
 Route::resource('fichas', FichaController::class);
-
+Route::post('/fichas/importar-aprendices', [FichaController::class, 'importarAprendices'])->name('fichas.importar-aprendices');
+Route::post('/fichas/importar-juicios-evaluativos', [FichaController::class, 'importarJuiciosEvaluativos'])->name('fichas.importar-juicios-evaluativos');
+Route::delete('/fichas/{ficha}/aprendices/{aprendiz}', [FichaController::class, 'eliminarAprendiz'])->name('fichas.aprendices.destroy');
