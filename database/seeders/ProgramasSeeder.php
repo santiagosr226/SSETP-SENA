@@ -19,169 +19,169 @@ class ProgramasSeeder extends Seeder
             // Programas Auxiliares (10)
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Sistemas Informáticos',
+                'nombre' => 'Sistemas Informáticos',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Electricidad Industrial',
+                'nombre' => 'Electricidad Industrial',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Mecánica Automotriz',
+                'nombre' => 'Mecánica Automotriz',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Mantenimiento de Equipos',
+                'nombre' => 'Mantenimiento de Equipos',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Logística y Transporte',
+                'nombre' => 'Logística y Transporte',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Administración',
+                'nombre' => 'Administración',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Contabilidad',
+                'nombre' => 'Contabilidad',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Secretariado',
+                'nombre' => 'Secretariado',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Panadería',
+                'nombre' => 'Panadería',
             ],
             [
                 'nivel' => 'Auxiliar',
-                'nombre' => 'Auxiliar en Cocina',
+                'nombre' => 'Cocina',
             ],
 
             // Programas Operarios (10)
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Soldadura',
+                'nombre' => 'Soldadura',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Máquinas y Herramientas',
+                'nombre' => 'Máquinas y Herramientas',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Refrigeración',
+                'nombre' => 'Refrigeración',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Plomería',
+                'nombre' => 'Plomería',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Carpintería',
+                'nombre' => 'Carpintería',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Instalaciones Eléctricas',
+                'nombre' => 'Instalaciones Eléctricas',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Mecánica Industrial',
+                'nombre' => 'Mecánica Industrial',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Pintura Industrial',
+                'nombre' => 'Pintura Industrial',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Mantenimiento de Edificios',
+                'nombre' => 'Mantenimiento de Edificios',
             ],
             [
                 'nivel' => 'Operario',
-                'nombre' => 'Operario en Jardinería y Paisajismo',
+                'nombre' => 'Jardinería y Paisajismo',
             ],
 
             // Programas Técnicos (10)
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Desarrollo de Software',
+                'nombre' => 'Desarrollo de Software',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Redes y Telecomunicaciones',
+                'nombre' => 'Redes y Telecomunicaciones',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Mecatrónica',
+                'nombre' => 'Mecatrónica',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Automatización Industrial',
+                'nombre' => 'Automatización Industrial',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Electricidad y Electrónica',
+                'nombre' => 'Electricidad y Electrónica',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Gestión Administrativa',
+                'nombre' => 'Gestión Administrativa',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Contabilidad y Finanzas',
+                'nombre' => 'Contabilidad y Finanzas',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Seguridad y Salud en el Trabajo',
+                'nombre' => 'Seguridad y Salud en el Trabajo',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Gastronomía',
+                'nombre' => 'Gastronomía',
             ],
             [
                 'nivel' => 'Técnico',
-                'nombre' => 'Técnico en Diseño Gráfico',
+                'nombre' => 'Diseño Gráfico',
             ],
 
             // Programas Tecnólogos (10)
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Análisis y Desarrollo de Sistemas',
+                'nombre' => 'Análisis y Desarrollo de Sistemas',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión de Redes de Datos',
+                'nombre' => 'Gestión de Redes de Datos',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Mecánica Industrial',
+                'nombre' => 'Mecánica Industrial',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Automatización y Control',
+                'nombre' => 'Automatización y Control',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión Empresarial',
+                'nombre' => 'Gestión Empresarial',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión Financiera',
+                'nombre' => 'Gestión Financiera',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión Ambiental',
+                'nombre' => 'Gestión Ambiental',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión Logística',
+                'nombre' => 'Gestión Logística',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Diseño y Desarrollo de Productos',
+                'nombre' => 'Diseño y Desarrollo de Productos',
             ],
             [
                 'nivel' => 'Tecnólogo',
-                'nombre' => 'Tecnólogo en Gestión de la Calidad',
+                'nombre' => 'Gestión de la Calidad',
             ],
         ];
 

@@ -104,8 +104,8 @@ class FichaController extends Controller
      */
     public function create()
     {
-        $programas = Programa::all();
-        $instructores = Funcionario::where('rol', 'instructor')->get();
+        $programas = Programa::orderBy('nombre')->get();
+        $instructores = Funcionario::where('rol', 'instructor')->orderBy('nombre')->get();
         return view('admin.fichas.create', compact('programas', 'instructores'));
     }
 

@@ -151,6 +151,35 @@
                         <!-- Acciones -->
                         <td class="px-2 py-1.5 whitespace-nowrap align-middle">
                             <div class="flex justify-center items-center flex-wrap gap-1">
+                                <button 
+                                    @click="openView(@js([
+                                        'id' => $ficha->id,
+                                        'numero' => $ficha->numero,
+                                        'estado' => $ficha->estado,
+                                        'modalidad' => $ficha->modalidad,
+                                        'jornada' => $ficha->jornada,
+                                        'fecha_inicial' => $ficha->fecha_inicial,
+                                        'fecha_final_lectiva' => $ficha->fecha_final_lectiva,
+                                        'fecha_final_formacion' => $ficha->fecha_final_formacion,
+                                        'fecha_limite_productiva' => $ficha->fecha_limite_productiva,
+                                        'fecha_actualizacion' => $ficha->fecha_actualizacion,
+                                        'resultados_aprendizaje_totales' => $ficha->resultados_aprendizaje_totales,
+                                        'programa' => [
+                                            'nombre' => $ficha->programa->nombre ?? 'N/A',
+                                            'nivel' => $ficha->programa->nivel ?? 'N/A',
+                                        ],
+                                        'instructor' => [
+                                            'nombre' => $ficha->instructor->nombre ?? 'N/A',
+                                            'correo' => $ficha->instructor->correo ?? 'N/A',
+                                            'telefono' => $ficha->instructor->telefono ?? 'N/A',
+                                        ],
+                                    ]))"
+                                    class="bg-emerald-500 hover:bg-emerald-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs"
+                                    title="Ver"
+                                >
+                                    <i data-lucide="eye" class="w-2.5 h-2.5"></i>
+                                    <span class="hidden lg:inline">Ver</span>
+                                </button>
                                 <a 
                                     href="{{ route('fichas.edit', $ficha->id) }}"
                                     class="bg-blue-500 hover:bg-blue-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs"
@@ -190,6 +219,121 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal Ver Ficha -->
+    <div 
+        x-show="showViewModal"
+        x-transition.opacity
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 md:p-4"
+        style="display: none;"
+        @keydown.escape.window="closeView()"
+    >
+        <div 
+            class="bg-white rounded-md shadow-lg w-full max-w-2xl overflow-hidden"
+            @click.outside="closeView()"
+        >
+            <div class="flex items-center justify-between px-3 py-2 bg-verde-sena text-white">
+                <h2 class="text-xs md:text-sm font-semibold">Ficha <span x-text="selectedFicha?.numero || ''"></span></h2>
+                <button class="text-white/90 hover:text-white" @click="closeView()">
+                    <i data-lucide="x" class="w-4 h-4 cursor-pointer"></i>
+                </button>
+            </div>
+
+            <div class="p-3 md:p-4 text-2xs md:text-xs space-y-4">
+                <!-- Encabezado con estado y programa -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+                    <div class="md:col-span-2 space-y-1">
+                        <p class="text-slate-500">Programa</p>
+                        <div class="flex items-center gap-2">
+                            <p class="font-semibold truncate" x-text="selectedFicha?.programa?.nombre || 'N/A'"></p>
+                            <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-700 border border-slate-200" x-text="selectedFicha?.programa?.nivel || 'N/A'"></span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-slate-500">Estado</p>
+                        <span class="capitalize inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-500 border border-slate-200 "
+                              x-text="selectedFicha?.estado || 'N/A'"></span>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Fechas -->
+                <div>
+                    <p class="text-slate-600 font-semibold mb-2">Fechas</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <p class="text-slate-500">Inicial lectiva</p>
+                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_inicial)"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Final lectiva</p>
+                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_final_lectiva)"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Final formación</p>
+                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_final_formacion)"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Límite productiva</p>
+                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_limite_productiva)"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Actualización</p>
+                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_actualizacion)"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Información general -->
+                <div>
+                    <p class="text-slate-600 font-semibold mb-2">Información</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <p class="text-slate-500">Modalidad</p>
+                            <p class="font-medium capitalize" x-text="selectedFicha?.modalidad || 'N/A'"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Jornada</p>
+                            <p class="font-medium capitalize" x-text="selectedFicha?.jornada || 'N/A'"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Resultados totales</p>
+                            <p class="font-medium" x-text="selectedFicha?.resultados_aprendizaje_totales ?? '0'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <!-- Instructor -->
+                <div>
+                    <p class="text-slate-600 font-semibold mb-2">Instructor</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <p class="text-slate-500">Nombre</p>
+                            <p class="font-medium" x-text="selectedFicha?.instructor?.nombre || 'N/A'"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Correo</p>
+                            <p class="font-medium truncate" x-text="selectedFicha?.instructor?.correo || 'N/A'"></p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500">Teléfono</p>
+                            <p class="font-medium" x-text="selectedFicha?.instructor?.telefono || 'N/A'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-1 flex justify-end gap-2">
+                    <button class="px-2.5 py-1 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer" @click="closeView()">Cerrar</button>
+                    <a :href="`/fichas/${selectedFicha?.id}/edit`" class="px-2.5 py-1 rounded-md bg-verde-sena text-white hover:bg-green-700">Editar</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -285,6 +429,25 @@
 <script>
 function fichasManager() {
     return {
+        showViewModal: false,
+        selectedFicha: null,
+        openView(data) {
+            this.selectedFicha = data;
+            this.showViewModal = true;
+            if (window.lucide?.createIcons) {
+                setTimeout(() => lucide.createIcons(), 0);
+            }
+        },
+        closeView() {
+            this.showViewModal = false;
+            this.selectedFicha = null;
+        },
+        formatDate(value) {
+            if (!value) return 'N/A';
+            const d = new Date(value);
+            if (isNaN(d.getTime())) return value;
+            return d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        },
         async confirmDelete(id, numero) {
             const result = await Swal.fire({
                 icon: 'warning',

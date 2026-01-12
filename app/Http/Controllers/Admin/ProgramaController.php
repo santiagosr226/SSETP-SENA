@@ -13,7 +13,7 @@ class ProgramaController extends Controller
      */
     public function index()
     {
-        $programas = Programa::all();
+        $programas = Programa::orderBy('nombre')->get();
         return view('admin.programas.index', compact('programas'));
     }
 
