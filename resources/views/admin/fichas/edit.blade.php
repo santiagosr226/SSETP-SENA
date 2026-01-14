@@ -11,6 +11,15 @@
             $oldImportedAprendicesArray = $tmp;
         }
     }
+
+    $oldImportedJuicios = old('imported_juicios');
+    $oldImportedJuiciosArray = [];
+    if (!empty($oldImportedJuicios)) {
+        $tmp2 = json_decode($oldImportedJuicios, true);
+        if (is_array($tmp2)) {
+            $oldImportedJuiciosArray = $tmp2;
+        }
+    }
 @endphp
 
 <div x-data="fichaEditManager()">
@@ -95,6 +104,7 @@
         @method('PUT')
 
         <input type="hidden" name="imported_aprendices" :value="JSON.stringify(importedData.aprendices)">
+        <input type="hidden" name="imported_juicios" :value="JSON.stringify(importedData.juicios)">
 
         <div class="form-card">
             <h2 class="text-sm font-semibold text-verde-sena mb-4">Información Básica</h2>
@@ -335,8 +345,13 @@
 
                 <button 
                     type="button"
-                    disabled
-                    class="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm opacity-50 cursor-not-allowed"
+                    @click="openImportModal('juicios')"
+                    class="inline-flex items-center gap-2 rounded-lg 
+                           bg-purple-600 px-4 py-2 text-sm font-semibold text-white
+                           shadow-sm transition
+                           hover:bg-purple-700
+                           focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+                           active:scale-95 cursor-pointer"
                 >
                     <i data-lucide="clipboard-check" class="w-4 h-4"></i>
                     Importar Juicios Evaluativos
@@ -367,8 +382,8 @@
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
                 >
-                    <div class="flex items-center justify-between px-4 py-3 rounded-t-xl bg-blue-500 text-white">
-                        <h2 class="text-xs font-semibold tracking-wide">Importar Aprendices</h2>
+                    <div class="flex items-center justify-between px-4 py-3 rounded-t-xl" :class="currentImportType === 'juicios' ? 'bg-purple-600 text-white' : 'bg-blue-500 text-white'">
+                        <h2 class="text-xs font-semibold tracking-wide" x-text="currentImportType === 'juicios' ? 'Importar Juicios Evaluativos' : 'Importar Aprendices'"></h2>
                         <button
                             @click="closeImportModal()"
                             class="p-1 rounded-full hover:bg-white/20 transition"
@@ -378,12 +393,10 @@
                     </div>
 
                     <div class="px-4 py-3 space-y-4">
-                        <p class="text-xs text-slate-600">Sube un archivo Excel o CSV con la información de los aprendices.</p>
+                        <p class="text-xs text-slate-600" x-text="currentImportType === 'juicios' ? 'Sube un archivo Excel o CSV con los juicios evaluativos.' : 'Sube un archivo Excel o CSV con la información de los aprendices.'"></p>
 
                         <div class="bg-slate-50 p-3 rounded-md">
-                            <code class="text-2xs text-slate-700 block font-mono">
-                                Tipo de Documento, Número de Documento, Nombre, Apellidos, Celular, Correo Electrónico, Estado
-                            </code>
+                            <code class="text-2xs text-slate-700 block font-mono" x-text="currentImportType === 'juicios' ? 'Tipo de Documento, Número de Documento, Nombre Completo, Estado, Juicio de Evaluación' : 'Tipo de Documento, Número de Documento, Nombre, Apellidos, Celular, Correo Electrónico, Estado'"></code>
                         </div>
 
                         <form @submit.prevent="handleImport" class="space-y-3">
@@ -628,6 +641,7 @@ function fichaEditManager() {
             // Si es solo preview, remover localmente
             if (isPreviewOnly) {
                 this.importedData.aprendices = (this.importedData.aprendices || []).filter(a => (a.numero_documento || '').toString() !== documento);
+                this.importedData.juicios = (this.importedData.juicios || []).filter(j => (j.numero_documento || '').toString() !== documento);
                 this.$nextTick(() => {
                     if (window.lucide?.createIcons) {
                         lucide.createIcons();
@@ -661,6 +675,7 @@ function fichaEditManager() {
                 // Quitar de la lista base y del preview si existía
                 this.initialAprendices = (this.initialAprendices || []).filter(a => (a.numero_documento || '').toString() !== documento);
                 this.importedData.aprendices = (this.importedData.aprendices || []).filter(a => (a.numero_documento || '').toString() !== documento);
+                this.importedData.juicios = (this.importedData.juicios || []).filter(j => (j.numero_documento || '').toString() !== documento);
 
                 await Swal.fire({
                     icon: 'success',
@@ -685,6 +700,7 @@ function fichaEditManager() {
         },
         importedData: {
             aprendices: @js($oldImportedAprendicesArray),
+            juicios: @js($oldImportedJuiciosArray),
         },
         initialAprendices: @js($ficha->aprendices->map(function ($a) {
             return [
@@ -772,6 +788,7 @@ function fichaEditManager() {
 
         clearPreview() {
             this.importedData.aprendices = [];
+            this.importedData.juicios = [];
             this.$nextTick(() => {
                 if (window.lucide?.createIcons) {
                     lucide.createIcons();
@@ -813,6 +830,15 @@ function fichaEditManager() {
         get displayAprendices() {
             const base = Array.isArray(this.initialAprendices) ? this.initialAprendices : [];
             const preview = Array.isArray(this.importedData.aprendices) ? this.importedData.aprendices : [];
+            const juicios = Array.isArray(this.importedData.juicios) ? this.importedData.juicios : [];
+
+            const juiciosMap = new Map();
+            juicios.forEach(j => {
+                const doc = (j.numero_documento || '').toString();
+                if (doc) {
+                    juiciosMap.set(doc, j);
+                }
+            });
 
             const map = new Map();
             base.forEach(a => {
@@ -848,6 +874,18 @@ function fichaEditManager() {
                 }
             });
 
+            // Aplicar conteo de juicios evaluativos (preview)
+            for (const [doc, item] of juiciosMap.entries()) {
+                const existing = map.get(doc);
+                if (!existing) continue;
+                const total = parseInt(item.total_resultados ?? 0, 10) || 0;
+                const porEvaluar = parseInt(item.por_evaluar ?? 0, 10) || 0;
+                map.set(doc, {
+                    ...existing,
+                    resultados_aprendizaje: `${porEvaluar}/${total}`,
+                });
+            }
+
             return Array.from(map.values());
         },
 
@@ -856,60 +894,111 @@ function fichaEditManager() {
             this.isImporting = true;
 
             try {
-                const formData = new FormData();
-                formData.append('archivo', this.selectedFile);
-                formData.append('ficha_id', @js($ficha->id));
-
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
-                const response = await fetch('{{ route("fichas.importar-aprendices") }}', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken
+                if (this.currentImportType === 'juicios') {
+                    if (this.displayAprendices.length === 0) {
+                        throw new Error('No hay aprendices para relacionar los juicios evaluativos.');
                     }
-                });
 
-                const data = await response.json();
+                    const formData = new FormData();
+                    formData.append('archivo', this.selectedFile);
+                    const numerosDocumento = this.displayAprendices
+                        .map(a => (a.numero_documento || '').toString())
+                        .filter(v => v);
+                    numerosDocumento.forEach(numDoc => {
+                        formData.append('numeros_documento[]', numDoc);
+                    });
 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Error al importar el archivo');
+                    const response = await fetch('{{ route("fichas.importar-juicios-evaluativos") }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Error al importar el archivo');
+                    }
+
+                    const conteo = Array.isArray(data.conteo_por_aprendiz)
+                        ? data.conteo_por_aprendiz
+                        : (data.conteo_por_aprendiz && typeof data.conteo_por_aprendiz === 'object'
+                            ? Object.values(data.conteo_por_aprendiz)
+                            : []);
+
+                    if (!Array.isArray(conteo) || conteo.length === 0) {
+                        throw new Error(data.message || 'No se encontraron juicios evaluativos válidos');
+                    }
+
+                    this.importedData.juicios = conteo;
+
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Juicios procesados!',
+                        html: `<p class="text-sm text-slate-700">${data.message || 'Juicios evaluativos procesados correctamente'}</p>
+                               <div class="mt-3 text-xs text-slate-600">
+                                    <p><strong>Aprendices con conteo:</strong> ${data.total_aprendices ?? conteo.length}</p>
+                               </div>`,
+                        confirmButtonColor: '#39A900'
+                    });
+                } else {
+                    const formData = new FormData();
+                    formData.append('archivo', this.selectedFile);
+                    formData.append('ficha_id', @js($ficha->id));
+
+                    const response = await fetch('{{ route("fichas.importar-aprendices") }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Error al importar el archivo');
+                    }
+
+                    let html = `<p class="text-sm text-slate-700">${data.message || 'Importación completada'}</p>`;
+                    if (typeof data.created !== 'undefined' || typeof data.updated !== 'undefined') {
+                        html += `<div class="mt-3 text-xs text-slate-600">
+                            <p><strong>Nuevos:</strong> ${data.created ?? 0}</p>
+                            <p><strong>Actualizados:</strong> ${data.updated ?? 0}</p>
+                            <p><strong>Total en preview:</strong> ${data.total ?? 0}</p>
+                            <p><strong>Omitidos por estado excluido:</strong> ${data.skipped_excluded ?? 0}</p>
+                        </div>`;
+                    }
+                    if (data.conflicts && data.conflicts.length > 0) {
+                        html += `<div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+                            <p class="text-xs font-semibold text-yellow-800 mb-1">Conflictos (${data.conflicts.length})</p>
+                            <div class="max-h-32 overflow-y-auto">
+                                <ul class="text-2xs text-yellow-900 space-y-1">
+                                    ${data.conflicts.map(c => `<li>${c.documento} - ${c.nombre}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>`;
+                    }
+
+                    await Swal.fire({
+                        icon: (data.conflicts && data.conflicts.length > 0) ? 'warning' : 'success',
+                        title: (data.conflicts && data.conflicts.length > 0) ? 'Importación con advertencias' : '¡Importación exitosa!',
+                        html,
+                        confirmButtonColor: '#39A900'
+                    });
+
+                    const listaAprendices = Array.isArray(data.aprendices)
+                        ? data.aprendices
+                        : (data.aprendices && typeof data.aprendices === 'object'
+                            ? Object.values(data.aprendices)
+                            : []);
+                    this.importedData.aprendices = listaAprendices;
                 }
-
-                let html = `<p class="text-sm text-slate-700">${data.message || 'Importación completada'}</p>`;
-                if (typeof data.created !== 'undefined' || typeof data.updated !== 'undefined') {
-                    html += `<div class="mt-3 text-xs text-slate-600">
-                        <p><strong>Nuevos:</strong> ${data.created ?? 0}</p>
-                        <p><strong>Actualizados:</strong> ${data.updated ?? 0}</p>
-                        <p><strong>Total en preview:</strong> ${data.total ?? 0}</p>
-                        <p><strong>Omitidos por estado excluido:</strong> ${data.skipped_excluded ?? 0}</p>
-                    </div>`;
-                }
-                if (data.conflicts && data.conflicts.length > 0) {
-                    html += `<div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-                        <p class="text-xs font-semibold text-yellow-800 mb-1">Conflictos (${data.conflicts.length})</p>
-                        <div class="max-h-32 overflow-y-auto">
-                            <ul class="text-2xs text-yellow-900 space-y-1">
-                                ${data.conflicts.map(c => `<li>${c.documento} - ${c.nombre}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>`;
-                }
-
-                await Swal.fire({
-                    icon: (data.conflicts && data.conflicts.length > 0) ? 'warning' : 'success',
-                    title: (data.conflicts && data.conflicts.length > 0) ? 'Importación con advertencias' : '¡Importación exitosa!',
-                    html,
-                    confirmButtonColor: '#39A900'
-                });
-
-                const listaAprendices = Array.isArray(data.aprendices)
-                    ? data.aprendices
-                    : (data.aprendices && typeof data.aprendices === 'object'
-                        ? Object.values(data.aprendices)
-                        : []);
-                this.importedData.aprendices = listaAprendices;
 
                 // Permitir el cierre del modal después de confirmar el mensaje
                 this.isImporting = false;

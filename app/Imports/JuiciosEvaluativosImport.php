@@ -35,7 +35,9 @@ class JuiciosEvaluativosImport implements ToCollection, WithHeadingRow
     public function __construct(array $numerosDocumentoAprendices = [])
     {
         $this->conteoPorAprendiz = collect();
-        $this->numerosDocumentoAprendices = $numerosDocumentoAprendices;
+        $this->numerosDocumentoAprendices = array_values(array_filter(array_map(function ($doc) {
+            return $this->normalizeDocumento($doc);
+        }, $numerosDocumentoAprendices)));
     }
 
     /**
@@ -76,15 +78,15 @@ class JuiciosEvaluativosImport implements ToCollection, WithHeadingRow
             }
 
             // Obtener número de documento (identificador único)
-            $numeroDocumento = $this->getValue($row, 'Número de Documento');
+            $numeroDocumento = $this->normalizeDocumento($this->getValue($row, 'Número de Documento'));
             
             if (empty($numeroDocumento)) {
                 continue;
             }
 
             // IMPORTANTE: Solo procesar aprendices que fueron importados previamente
-            $numeroDocumentoTrim = trim($numeroDocumento);
-            if (!empty($this->numerosDocumentoAprendices) && !in_array($numeroDocumentoTrim, $this->numerosDocumentoAprendices)) {
+            $numeroDocumentoTrim = $numeroDocumento;
+            if (!empty($this->numerosDocumentoAprendices) && !in_array($numeroDocumentoTrim, $this->numerosDocumentoAprendices, true)) {
                 continue; // Saltar si el aprendiz no fue importado previamente
             }
             
@@ -151,6 +153,25 @@ class JuiciosEvaluativosImport implements ToCollection, WithHeadingRow
         
         // Por evaluar solo si es exactamente "POR EVALUAR"
         return $juicioNormalizado === 'POR EVALUAR';
+    }
+
+    private function normalizeDocumento($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_int($value)) {
+            return (string) $value;
+        }
+
+        if (is_float($value) || is_numeric($value)) {
+            return (string) (int) round((float) $value);
+        }
+
+        $str = trim((string) $value);
+        $digits = preg_replace('/\D+/', '', $str);
+        return $digits ?? '';
     }
 
     /**

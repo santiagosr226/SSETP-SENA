@@ -233,6 +233,39 @@ class FichaController extends Controller
                 }
             }
 
+            // Aplicar juicios evaluativos importados al guardar cambios
+            $importedJuiciosRaw = $validated['imported_juicios'] ?? null;
+            if (!empty($importedJuiciosRaw)) {
+                $decodedJuicios = json_decode($importedJuiciosRaw, true);
+                if (json_last_error() !== JSON_ERROR_NONE || !is_array($decodedJuicios)) {
+                    throw new \InvalidArgumentException('El JSON de juicios importados no es válido.');
+                }
+
+                foreach ($decodedJuicios as $item) {
+                    $documento = $this->normalizeDocumento($item['numero_documento'] ?? '');
+                    if ($documento === '') {
+                        continue;
+                    }
+
+                    $total = (int)($item['total_resultados'] ?? 0);
+                    $porEvaluar = (int)($item['por_evaluar'] ?? 0);
+                    $resultadosAprendizaje = $total > 0 ? ($porEvaluar . '/' . $total) : '0/0';
+
+                    $aprendiz = Aprendiz::where('documento', $documento)->first();
+                    if (!$aprendiz) {
+                        continue;
+                    }
+                    if ((int)$aprendiz->ficha_id !== (int)$ficha->id) {
+                        continue;
+                    }
+
+                    $aprendiz->update([
+                        'resultados_aprendizaje' => $resultadosAprendizaje,
+                        'fecha_actualizacion' => now()->format('Y-m-d'),
+                    ]);
+                }
+            }
+
             DB::commit();
             \Log::info('Transacción completada exitosamente');
 
@@ -327,6 +360,7 @@ class FichaController extends Controller
                 'jornada' => 'required|string',
                 'resultados_aprendizaje_totales' => 'nullable|integer|min:0',
                 'imported_aprendices' => 'nullable|string',
+                'imported_juicios' => 'nullable|string',
             ]);
 
             DB::beginTransaction();
@@ -437,6 +471,39 @@ class FichaController extends Controller
                     ]);
 
                     $created++;
+                }
+            }
+
+            // Aplicar juicios evaluativos importados al guardar cambios
+            $importedJuiciosRaw = $validated['imported_juicios'] ?? null;
+            if (!empty($importedJuiciosRaw)) {
+                $decodedJuicios = json_decode($importedJuiciosRaw, true);
+                if (json_last_error() !== JSON_ERROR_NONE || !is_array($decodedJuicios)) {
+                    throw new \InvalidArgumentException('El JSON de juicios importados no es válido.');
+                }
+
+                foreach ($decodedJuicios as $item) {
+                    $documento = $this->normalizeDocumento($item['numero_documento'] ?? '');
+                    if ($documento === '') {
+                        continue;
+                    }
+
+                    $total = (int)($item['total_resultados'] ?? 0);
+                    $porEvaluar = (int)($item['por_evaluar'] ?? 0);
+                    $resultadosAprendizaje = $total > 0 ? ($porEvaluar . '/' . $total) : '0/0';
+
+                    $aprendiz = Aprendiz::where('documento', $documento)->first();
+                    if (!$aprendiz) {
+                        continue;
+                    }
+                    if ((int)$aprendiz->ficha_id !== (int)$ficha->id) {
+                        continue;
+                    }
+
+                    $aprendiz->update([
+                        'resultados_aprendizaje' => $resultadosAprendizaje,
+                        'fecha_actualizacion' => now()->format('Y-m-d'),
+                    ]);
                 }
             }
 
@@ -631,7 +698,7 @@ class FichaController extends Controller
             
             // Limpiar y normalizar números de documento
             $numerosDocumento = array_map(function($doc) {
-                return trim($doc);
+                return $this->normalizeDocumento($doc);
             }, $numerosDocumento);
             
             $numerosDocumento = array_filter($numerosDocumento); // Eliminar vacíos
