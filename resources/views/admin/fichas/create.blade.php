@@ -568,7 +568,7 @@
                         </code>
                     </div>
                     
-                    <form @submit.prevent="handleImport" id="importForm" class="space-y-3">
+                    <div id="importForm" class="space-y-3">
                         <div>
                             <label for="importFile" class="block text-xs font-medium text-slate-700 mb-1">
                                 Seleccionar archivo
@@ -621,7 +621,8 @@
                             </button>
                             
                             <button 
-                                type="submit"
+                                type="button"
+                                @click="handleImport"
                                 :disabled="!selectedFile || isImporting"
                                 class="px-3 py-1.5 text-xs font-medium text-white rounded-md transition duration-200 flex items-center gap-1 disabled:opacity-50"
                                 :class="currentImportType === 'aprendices' ? 
@@ -642,7 +643,7 @@
                                 <span x-text="isImporting ? 'Importando...' : 'Importar'"></span>
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

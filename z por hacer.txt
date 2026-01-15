@@ -1,4 +1,5 @@
--Terminar update de fichas, añadir importacion de juicios.
--Añadir en la vista index de fichas la opcion de consultar aprenices (modal)
+-Terminar update de fichas, añadir importacion de juicios. ok
+-Añadir en la vista index de fichas la opcion de consultar aprendices (modal)
 -Tener en cuenta los colores dependiendo de la modalida que tenga
 -Añadir modalidad id a los aprendices
+-Mejorar el cierre de la modal de ver mas en aprendices y fichas

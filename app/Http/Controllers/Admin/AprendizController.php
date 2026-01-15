@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Aprendiz;
+use App\Models\Ficha;
 use Illuminate\Http\Request;
 
 class AprendizController extends Controller
@@ -12,7 +14,13 @@ class AprendizController extends Controller
      */
     public function index()
     {
-        return view('admin.aprendices.index');
+        $aprendices = Aprendiz::with(['ficha.programa', 'otrasAlternativas'])
+            ->orderBy(Ficha::select('numero')->whereColumn('fichas.id', 'aprendices.ficha_id'))
+            ->orderBy('apellido')
+            ->orderBy('nombre')
+            ->paginate(35);
+
+        return view('admin.aprendices.index', compact('aprendices'));
     }
 
     /**

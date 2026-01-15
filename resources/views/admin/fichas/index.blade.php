@@ -174,7 +174,7 @@
                                             'telefono' => $ficha->instructor->telefono ?? 'N/A',
                                         ],
                                     ]))"
-                                    class="bg-emerald-500 hover:bg-emerald-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs"
+                                    class="bg-emerald-500 hover:bg-emerald-600 text-white px-1.5 py-1 rounded-md transition duration-200 flex items-center gap-0.5 text-2xs cursor-pointer"
                                     title="Ver"
                                 >
                                     <i data-lucide="eye" class="w-2.5 h-2.5"></i>
@@ -226,113 +226,163 @@
     <div 
         x-show="showViewModal"
         x-transition.opacity
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 md:p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4"
         style="display: none;"
         @keydown.escape.window="closeView()"
     >
         <div 
-            class="bg-white rounded-md shadow-lg w-full max-w-2xl overflow-hidden"
+            x-show="showViewModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95"
+            class="bg-white rounded-lg shadow-2xl w-full max-w-4xl overflow-hidden max-h-[90vh] flex flex-col"
             @click.outside="closeView()"
         >
-            <div class="flex items-center justify-between px-3 py-2 bg-verde-sena text-white">
-                <h2 class="text-xs md:text-sm font-semibold">Ficha <span x-text="selectedFicha?.numero || ''"></span></h2>
-                <button class="text-white/90 hover:text-white" @click="closeView()">
-                    <i data-lucide="x" class="w-4 h-4 cursor-pointer"></i>
-                </button>
+            <!-- Header con gradiente -->
+            <div class="relative bg-gradient-to-r from-verde-sena to-green-600 text-white px-4 md:px-6 py-4 md:py-5">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-full p-2.5">
+                            <i data-lucide="file-text" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm md:text-base font-bold">
+                                Ficha <span x-text="selectedFicha?.numero || ''"></span>
+                            </h2>
+                            <p class="text-xs md:text-sm text-white/90 mt-0.5" x-text="selectedFicha?.programa?.nombre || 'N/A'"></p>
+                        </div>
+                    </div>
+                    <button class="text-white/90 hover:text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200" @click="closeView()">
+                        <i data-lucide="x" class="w-5 h-5 cursor-pointer"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="p-3 md:p-4 text-2xs md:text-xs space-y-4">
-                <!-- Encabezado con estado y programa -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
-                    <div class="md:col-span-2 space-y-1">
-                        <p class="text-slate-500">Programa</p>
-                        <div class="flex items-center gap-2">
-                            <p class="font-semibold truncate" x-text="selectedFicha?.programa?.nombre || 'N/A'"></p>
-                            <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] bg-slate-100 text-slate-700 border border-slate-200" x-text="selectedFicha?.programa?.nivel || 'N/A'"></span>
+            <!-- Contenido con scroll -->
+            <div class="overflow-y-auto flex-1 p-4 md:p-6 bg-gradient-to-b from-slate-50 to-white">
+                <div class="space-y-5">
+                    <!-- Programa y Estado -->
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="bg-orange-500/10 rounded-lg p-2">
+                                <i data-lucide="book-open" class="w-4 h-4 text-orange-600"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Programa de Formación</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2 space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Nombre del Programa</p>
+                                <p class="text-sm font-semibold text-slate-900" x-text="selectedFicha?.programa?.nombre || 'N/A'"></p>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Nivel</p>
+                                <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-900 border border-slate-200"
+                                      x-text="selectedFicha?.programa?.nivel || 'N/A'"></span>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Estado</p>
+                                <span class="capitalize inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200"
+                                      x-text="selectedFicha?.estado || 'N/A'"></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="space-y-1">
-                        <p class="text-slate-500">Estado</p>
-                        <span class="capitalize inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-500 border border-slate-200 "
-                              x-text="selectedFicha?.estado || 'N/A'"></span>
-                    </div>
-                </div>
 
-                <hr class="border-slate-200">
-
-                <!-- Fechas -->
-                <div>
-                    <p class="text-slate-600 font-semibold mb-2">Fechas</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                            <p class="text-slate-500">Inicial lectiva</p>
-                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_inicial)"></p>
+                    <!-- Fechas de Formación -->
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="bg-emerald-500/10 rounded-lg p-2">
+                                <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Fechas de Formación</h3>
                         </div>
-                        <div>
-                            <p class="text-slate-500">Final lectiva</p>
-                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_final_lectiva)"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Final formación</p>
-                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_final_formacion)"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Límite productiva</p>
-                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_limite_productiva)"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Actualización</p>
-                            <p class="font-medium" x-text="formatDate(selectedFicha?.fecha_actualizacion)"></p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Inicial Lectiva</p>
+                                <p class="text-sm font-bold text-slate-900" x-text="formatDate(selectedFicha?.fecha_inicial)"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Final Lectiva</p>
+                                <p class="text-sm font-bold text-slate-900" x-text="formatDate(selectedFicha?.fecha_final_lectiva)"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Final Formación</p>
+                                <p class="text-sm font-bold text-slate-900" x-text="formatDate(selectedFicha?.fecha_final_formacion)"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Límite Productiva</p>
+                                <p class="text-sm font-bold text-slate-900" x-text="formatDate(selectedFicha?.fecha_limite_productiva)"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Actualización</p>
+                                <p class="text-sm font-bold text-slate-900" x-text="formatDate(selectedFicha?.fecha_actualizacion)"></p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-slate-200">
+                    <!-- Información General -->
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="bg-blue-500/10 rounded-lg p-2">
+                                <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Información General</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Modalidad</p>
+                                <p class="text-sm font-bold text-slate-900 capitalize" x-text="selectedFicha?.modalidad || 'N/A'"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white rounded-lg p-3 border border-slate-200">
+                                <p class="text-xs text-slate-500 font-medium mb-1">Jornada</p>
+                                <p class="text-sm font-bold text-slate-900 capitalize" x-text="selectedFicha?.jornada || 'N/A'"></p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+                                <p class="text-xs text-blue-600 font-medium mb-1">Resultados Totales</p>
+                                <p class="text-sm font-bold text-blue-700" x-text="selectedFicha?.resultados_aprendizaje_totales ?? '0'"></p>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Información general -->
-                <div>
-                    <p class="text-slate-600 font-semibold mb-2">Información</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                            <p class="text-slate-500">Modalidad</p>
-                            <p class="font-medium capitalize" x-text="selectedFicha?.modalidad || 'N/A'"></p>
+                    <!-- Instructor -->
+                    <div class="bg-gradient-to-br from-verde-sena/5 to-white rounded-lg shadow-sm border border-verde-sena/20 p-4 hover:shadow-md transition-shadow duration-200">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="bg-verde-sena/10 rounded-lg p-2">
+                                <i data-lucide="user-check" class="w-4 h-4 text-verde-sena"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-slate-800">Instructor Lider</h3>
                         </div>
-                        <div>
-                            <p class="text-slate-500">Jornada</p>
-                            <p class="font-medium capitalize" x-text="selectedFicha?.jornada || 'N/A'"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Resultados totales</p>
-                            <p class="font-medium" x-text="selectedFicha?.resultados_aprendizaje_totales ?? '0'"></p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Nombre</p>
+                                <p class="text-sm font-semibold text-slate-900" x-text="selectedFicha?.instructor?.nombre || 'N/A'"></p>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Correo</p>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="mail" class="w-3.5 h-3.5 text-verde-sena flex-shrink-0"></i>
+                                    <p class="text-sm font-semibold text-slate-900 truncate" x-text="selectedFicha?.instructor?.correo || 'N/A'"></p>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs text-slate-500 font-medium">Teléfono</p>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5 text-verde-sena"></i>
+                                    <p class="text-sm font-semibold text-slate-900" x-text="selectedFicha?.instructor?.telefono || 'N/A'"></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <hr class="border-slate-200">
-
-                <!-- Instructor -->
-                <div>
-                    <p class="text-slate-600 font-semibold mb-2">Instructor</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                            <p class="text-slate-500">Nombre</p>
-                            <p class="font-medium" x-text="selectedFicha?.instructor?.nombre || 'N/A'"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Correo</p>
-                            <p class="font-medium truncate" x-text="selectedFicha?.instructor?.correo || 'N/A'"></p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500">Teléfono</p>
-                            <p class="font-medium" x-text="selectedFicha?.instructor?.telefono || 'N/A'"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-1 flex justify-end gap-2">
-                    <button class="px-2.5 py-1 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer" @click="closeView()">Cerrar</button>
-                    <a :href="`/fichas/${selectedFicha?.id}/edit`" class="px-2.5 py-1 rounded-md bg-verde-sena text-white hover:bg-green-700">Editar</a>
-                </div>
+            <!-- Footer -->
+            <div class="border-t border-slate-200 bg-slate-50 px-4 md:px-6 py-3 md:py-4 flex justify-end gap-2">
+                <button class="px-4 py-2 rounded-lg text-sm font-medium border border-slate-300 text-slate-700 hover:bg-white hover:shadow-sm transition-all duration-200 cursor-pointer" @click="closeView()">
+                    Cerrar
+                </button>
             </div>
         </div>
     </div>
